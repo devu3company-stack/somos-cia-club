@@ -2,10 +2,22 @@
 import { useState, useEffect } from 'react'
 import Sidebar from '@/components/Sidebar'
 
+interface CupomInfo {
+    morador: string
+    unidade: string
+    mes_ano: string
+    resgatado_em: string
+}
+
+interface ValidateResult {
+    valid: boolean
+    cupom: CupomInfo
+}
+
 export default function ValidarCupom() {
     const [codigo, setCodigo] = useState('')
     const [userName, setUserName] = useState('')
-    const [result, setResult] = useState<Record<string, unknown> | null>(null)
+    const [result, setResult] = useState<ValidateResult | null>(null)
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
 
@@ -32,7 +44,7 @@ export default function ValidarCupom() {
                 return
             }
 
-            setResult(data)
+            setResult(data as ValidateResult)
         } catch {
             setError('Erro de conexão')
         } finally {
@@ -72,7 +84,7 @@ export default function ValidarCupom() {
                     </div>
                 )}
 
-                {result?.valid && (
+                {result?.valid && result.cupom && (
                     <div className="card animate-fade-in" style={{ maxWidth: 500, margin: '24px auto' }}>
                         <div style={{ textAlign: 'center', marginBottom: 24 }}>
                             <div style={{ fontSize: 48, marginBottom: 8 }}>✅</div>
@@ -81,19 +93,19 @@ export default function ValidarCupom() {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>
                                 <span style={{ color: 'var(--text-secondary)', fontSize: 13 }}>Morador</span>
-                                <strong>{(result.cupom as Record<string, string>)?.morador}</strong>
+                                <strong>{result.cupom.morador}</strong>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>
                                 <span style={{ color: 'var(--text-secondary)', fontSize: 13 }}>Unidade</span>
-                                <strong>{(result.cupom as Record<string, string>)?.unidade}</strong>
+                                <strong>{result.cupom.unidade}</strong>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>
                                 <span style={{ color: 'var(--text-secondary)', fontSize: 13 }}>Período</span>
-                                <strong>{(result.cupom as Record<string, string>)?.mes_ano}</strong>
+                                <strong>{result.cupom.mes_ano}</strong>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
                                 <span style={{ color: 'var(--text-secondary)', fontSize: 13 }}>Resgatado em</span>
-                                <strong>{new Date((result.cupom as Record<string, string>)?.resgatado_em).toLocaleDateString('pt-BR')}</strong>
+                                <strong>{new Date(result.cupom.resgatado_em).toLocaleDateString('pt-BR')}</strong>
                             </div>
                         </div>
                     </div>
