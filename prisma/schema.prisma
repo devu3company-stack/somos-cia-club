@@ -9,66 +9,62 @@ datasource db {
 }
 
 model Resident {
-  id                      String   @id @default(cuid())
+  id                      String              @id @default(cuid())
   nome                    String
-  email                   String   @unique
-  cpf                     String   @unique
+  email                   String              @unique
+  cpf                     String              @unique
   senha                   String
   unidade                 String
   external_id             String?
-  status                  String   @default("ativo") // ativo | inativo
-  inadimplente            Boolean  @default(false)
-  dias_atraso             Int      @default(0)
-  pontos                  Int      @default(0)
+  status                  String              @default("ativo")
+  inadimplente            Boolean             @default(false)
+  dias_atraso             Int                 @default(0)
+  pontos                  Int                 @default(0)
   ultimo_login_verificado DateTime?
-  createdAt               DateTime @default(now())
-  updatedAt               DateTime @updatedAt
-
-  couponRedemptions  CouponRedemption[]
-  walletTransactions WalletTransaction[]
+  createdAt               DateTime            @default(now())
+  updatedAt               DateTime            @updatedAt
+  couponRedemptions       CouponRedemption[]
+  walletTransactions      WalletTransaction[]
 }
 
 model Partner {
-  id             String   @id @default(cuid())
-  nome_fantasia  String
-  cnpj           String   @unique
-  email          String   @unique
-  senha          String
-  aprovado       Boolean  @default(false)
-  categoria      String
-  limite_mensal  Int      @default(1)
-  logo_url       String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  offers            Offer[]
+  id                String             @id @default(cuid())
+  nome_fantasia     String
+  cnpj              String             @unique
+  email             String             @unique
+  senha             String
+  aprovado          Boolean            @default(false)
+  categoria         String
+  limite_mensal     Int                @default(1)
+  logo_url          String?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
   couponRedemptions CouponRedemption[]
+  offers            Offer[]
 }
 
 model Offer {
-  id         String  @id @default(cuid())
-  partnerId  String
-  titulo     String
-  descricao  String
-  desconto   String
-  ativo      Boolean @default(true)
-  image_url  String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  partner Partner @relation(fields: [partnerId], references: [id])
+  id        String   @id @default(cuid())
+  partnerId String
+  titulo    String
+  descricao String
+  desconto  String
+  ativo     Boolean  @default(true)
+  image_url String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  partner   Partner  @relation(fields: [partnerId], references: [id])
 }
 
 model CouponRedemption {
   id         String   @id @default(cuid())
   residentId String
   partnerId  String
-  mes_ano    String   // formato: "2026-02"
+  mes_ano    String
   usado_em   DateTime @default(now())
   codigo     String   @unique @default(cuid())
-
-  resident Resident @relation(fields: [residentId], references: [id])
-  partner  Partner  @relation(fields: [partnerId], references: [id])
+  partner    Partner  @relation(fields: [partnerId], references: [id])
+  resident   Resident @relation(fields: [residentId], references: [id])
 
   @@unique([residentId, partnerId, mes_ano])
 }
@@ -76,42 +72,39 @@ model CouponRedemption {
 model WalletTransaction {
   id         String   @id @default(cuid())
   residentId String
-  tipo       String   // credito | debito | reset
+  tipo       String
   pontos     Int
   motivo     String
   data       DateTime @default(now())
-
-  resident Resident @relation(fields: [residentId], references: [id])
+  resident   Resident @relation(fields: [residentId], references: [id])
 }
 
 model PrizeCampaign {
-  id             String  @id @default(cuid())
+  id             String          @id @default(cuid())
   titulo         String
   descricao      String?
   pontos_minimos Int
-  ativo          Boolean @default(true)
+  ativo          Boolean         @default(true)
   image_url      String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  entries CampaignEntry[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  entries        CampaignEntry[]
 }
 
 model CampaignEntry {
-  id         String   @id @default(cuid())
+  id         String        @id @default(cuid())
   campaignId String
   residentId String
-  createdAt  DateTime @default(now())
-
-  campaign PrizeCampaign @relation(fields: [campaignId], references: [id])
+  createdAt  DateTime      @default(now())
+  campaign   PrizeCampaign @relation(fields: [campaignId], references: [id])
 
   @@unique([campaignId, residentId])
 }
 
 model Admin {
-  id    String @id @default(cuid())
-  nome  String
-  email String @unique
-  senha String
+  id        String   @id @default(cuid())
+  nome      String
+  email     String   @unique
+  senha     String
   createdAt DateTime @default(now())
 }
